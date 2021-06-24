@@ -67,14 +67,15 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
         posy = e.getY();
         if(panel.isTreeClicked()){
             currentTree = new MyTree(posx, posy,panel.getC());
-            myTreeArrayList.add(currentTree);
+            myTreeArrayList.add(currentTree);switchColor();
         }
         else if(panel.isHouseClicked()){
             currentHouse = new MyHouse(posx,posy,panel.getC());
             myHouseArrayList.add(currentHouse);
+            switchColor();
         }
         repaint();
-        switchColor();
+
     }
 
     @Override
