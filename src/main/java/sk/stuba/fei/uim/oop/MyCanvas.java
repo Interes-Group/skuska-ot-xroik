@@ -15,10 +15,13 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
     private final ArrayList<MyHouse> myHouseArrayList = new ArrayList<>();
     private MyHouse currentHouse;
     private final ArrayList<MyLine> myLineArrayList = new ArrayList<>();
+    private MyLine currentLine;
     private int posx;
     private int posy;
     private boolean clickedOnObject = false;
-    private int clickedObjectIndex;
+    private String clickedObjectType;
+    private int coordsOfClickedObjectX1 = 0;
+    private int coordsOfClickedObjectY1 = 0;
     public MyCanvas(MyJPanel panel){
         super();
         this.panel = panel;
@@ -26,6 +29,23 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
         this.setVisible(true);
         addMouseListener(this);
         addMouseMotionListener(this);
+    }
+    public void switchColor(){
+        switch (panel.getCounter()) {
+            case 0:
+                panel.setC(Color.RED);
+                panel.setCounter(panel.getCounter()+1);
+                break;
+            case 1:
+                panel.setC(Color.BLUE);
+                panel.setCounter(panel.getCounter()+1);
+                break;
+            case 2:
+                panel.setC(Color.MAGENTA);
+                panel.setCounter(0);
+                break;
+        }
+        panel.getJLtext().setBackground(panel.getC());
     }
     @Override
     protected void paintComponent(Graphics g){
@@ -35,6 +55,9 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
         }
         for(MyHouse house : myHouseArrayList){
             house.paintHouse(g);
+        }
+        for(MyLine line : myLineArrayList){
+            line.paintLine(g);
         }
     }
     @Override
@@ -49,19 +72,32 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
         else if(panel.isHouseClicked()){
             currentHouse = new MyHouse(posx,posy,panel.getC());
             myHouseArrayList.add(currentHouse);
-
         }
         repaint();
+        switchColor();
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         if(panel.isLineClicked()){
-            int counter = 0;
             for(MyTree tree : myTreeArrayList){
                 if(tree.contains(e.getX(),e.getY())){
                     clickedOnObject = true;
-                    clickedObjectIndex = counter;
+                    clickedObjectType = "Tree";
+                    coordsOfClickedObjectX1 = (int)tree.getX()+25;
+                    coordsOfClickedObjectY1 = (int)tree.getY()+25;
+                    currentLine = new MyLine(coordsOfClickedObjectX1,coordsOfClickedObjectY1,e.getX(),e.getY());
+                    myLineArrayList.add(currentLine);
+                }
+            }
+            for(MyHouse house : myHouseArrayList){
+                if(house.contains(e.getX(),e.getY())){
+                    clickedOnObject = true;
+                    clickedObjectType ="House";
+                    coordsOfClickedObjectX1 = (int)house.getX()+25;
+                    coordsOfClickedObjectY1 = (int)house.getY()+25;
+                    currentLine = new MyLine(coordsOfClickedObjectX1,coordsOfClickedObjectY1,e.getX(),e.getY());
+                    myLineArrayList.add(currentLine);
                 }
             }
         }
@@ -69,7 +105,41 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if(panel.isLineClicked()){
+            if(clickedOnObject){
+                if(clickedObjectType.equals("Tree")){
+                    boolean clickedOnHouse = false;
+                    for (MyHouse house : myHouseArrayList){
+                        if(house.contains(e.getX(),e.getY())){
+                            clickedOnHouse = true;
+                            currentLine.setX2((int)house.getX()+25);
+                            currentLine.setY2((int)house.getY()+25);
+                        }
+                    }
+                    if(!clickedOnHouse){
+                        myLineArrayList.remove(currentLine);
+                    }
+                }
+                else if(clickedObjectType.equals("House")){
+                    boolean clickedOnTree = false;
+                    for(MyTree tree: myTreeArrayList){
+                        if(tree.contains(e.getX(),e.getY())){
+                            clickedOnTree = true;
+                            currentLine.setX2((int)tree.getX()+25);
+                            currentLine.setY2((int)tree.getY()+25);
+                        }
+                    }
+                    if(!clickedOnTree){
+                        myLineArrayList.remove(currentLine);
+                    }
+                }
+            }
+        }
+        coordsOfClickedObjectX1 = 0;
+        coordsOfClickedObjectY1 = 0;
+        clickedOnObject = false;
+        clickedObjectType = "Reset";
+        repaint();
     }
 
     @Override
@@ -87,7 +157,14 @@ public class MyCanvas extends JPanel implements MouseListener, MouseMotionListen
         int dx = e.getX();
         int dy = e.getY();
         if(panel.isLineClicked() && clickedOnObject){
-
+            currentLine.setX2(dx);
+            currentLine.setY2(dy);
+            repaint();
+        }
+        for(MyHouse house : myHouseArrayList){
+            if(house.contains(e.getX(),e.getY())){
+                System.out.print("On House");
+            }
         }
     }
 

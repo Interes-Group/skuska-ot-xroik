@@ -1,12 +1,14 @@
 package sk.stuba.fei.uim.oop;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 @Getter
+@Setter
 public class MyJPanel extends JPanel implements ActionListener {
 
     private final JButton JBstrom;
@@ -24,11 +26,12 @@ public class MyJPanel extends JPanel implements ActionListener {
         JBdom = new JButton("Dom");
         JBcesta = new JButton("Cesta");
         JLtext = new JLabel("Kreslenie stromu",SwingConstants.CENTER);
+        JLtext.setOpaque(true);
+        JLtext.setBackground(Color.RED);
         this.setLayout(new GridLayout(1,4));
         JBstrom.addActionListener(this);
         JBdom.addActionListener(this);
         JBcesta.addActionListener(this);
-        JLtext.setForeground(Color.RED);
         this.add(JBstrom);
         this.add(JBdom);
         this.add(JBcesta);
@@ -36,23 +39,7 @@ public class MyJPanel extends JPanel implements ActionListener {
 
         this.setVisible(true);
     }
-    public void switchColor(){
-        switch (counter) {
-            case 0:
-                c = Color.RED;
-                counter++;
-                break;
-            case 1:
-                c = Color.BLUE;
-                counter++;
-                break;
-            case 2:
-                c = Color.MAGENTA;
-                counter=0;
-                break;
-        }
-        JLtext.setForeground(c);
-    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Strom")) {
@@ -60,21 +47,21 @@ public class MyJPanel extends JPanel implements ActionListener {
             isHouseClicked = false;
             isLineClicked = false;
             JLtext.setText("Kreslenie stromu");
-            switchColor();
+            //switchColor();
         }
         if (e.getActionCommand().equals("Dom")) {
             isTreeClicked = false;
             isHouseClicked = true;
             isLineClicked = false;
             JLtext.setText("Kreslenie domu");
-            switchColor();
+            //switchColor();
         }
         if (e.getActionCommand().equals("Cesta")) {
             isTreeClicked = false;
             isHouseClicked = false;
             isLineClicked = true;
             JLtext.setText("Kreslenie cesty");
-            switchColor();
+            //switchColor();
         }
     }
     }
